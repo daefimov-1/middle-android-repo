@@ -1,8 +1,18 @@
 package com.example.androidpracticumcustomview.ui.theme
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 
 /*
@@ -19,17 +29,56 @@ fun CustomContainerCompose(
     secondChild: @Composable (() -> Unit)?
 ) {
     // Блок создания и инициализации переменных
-    // ..
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val screenHeightPx = LocalDensity.current.run { screenHeight.dp.toPx() }
+
+    val animatedHeight1 = remember { Animatable(0f) }
+    val animatedHeight2 = remember { Animatable(0f) }
+    val alpha = remember { Animatable(0f) }
 
     // Блок активации анимации при первом запуске
     LaunchedEffect(Unit) {
-        // TODO
-        // ...
+        launch {
+            animatedHeight1.animateTo(
+                targetValue = -1 * screenHeightPx / 4,
+                animationSpec = tween(durationMillis = 5000)
+            )
+        }
+        launch {
+            animatedHeight2.animateTo(
+                targetValue = screenHeightPx / 4,
+                animationSpec = tween(durationMillis = 5000)
+            )
+        }
+        launch {
+            alpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 2000)
+            )
+        }
     }
 
-    // Основной контейнер
-    Box() {
-        // TODO
-        // ...
+    Box(
+        modifier = Modifier
+            .graphicsLayer(
+                alpha = alpha.value,
+                translationY = animatedHeight1.value
+            )
+            .height((screenHeight / 2).dp)
+    ) {
+        firstChild?.invoke()
+    }
+
+    Box(
+        modifier = Modifier
+            .graphicsLayer(
+                alpha = alpha.value,
+                translationY = animatedHeight2.value
+            )
+            .height((screenHeight / 2).dp)
+
+    ) {
+        secondChild?.invoke()
     }
 }
