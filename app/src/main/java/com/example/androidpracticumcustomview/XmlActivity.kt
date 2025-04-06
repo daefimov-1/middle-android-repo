@@ -1,18 +1,14 @@
 package com.example.androidpracticumcustomview
 
-import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.animation.DecelerateInterpolator
-import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import com.example.androidpracticumcustomview.ui.theme.CustomContainer
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import android.view.animation.AccelerateInterpolator
 
 class XmlActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,9 +46,4 @@ class XmlActivity : ComponentActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         return displayMetrics.heightPixels
     }
-}
-
-private enum class AnimatedView {
-    FIRST,
-    SECOND
 }

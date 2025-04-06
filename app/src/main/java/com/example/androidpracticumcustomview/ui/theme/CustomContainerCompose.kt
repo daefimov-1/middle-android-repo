@@ -4,13 +4,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -30,7 +30,8 @@ fun CustomContainerCompose(
 ) {
     // Блок создания и инициализации переменных
     val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.toFloat()
+    val screenHeight = configuration.screenHeightDp
+    val screenHeightPx = LocalDensity.current.run { screenHeight.dp.toPx() }
 
     val animatedHeight1 = remember { Animatable(0f) }
     val animatedHeight2 = remember { Animatable(0f) }
@@ -40,13 +41,13 @@ fun CustomContainerCompose(
     LaunchedEffect(Unit) {
         launch {
             animatedHeight1.animateTo(
-                targetValue = -1 * screenHeight / 4,
+                targetValue = -1 * screenHeightPx / 4,
                 animationSpec = tween(durationMillis = 5000)
             )
         }
         launch {
             animatedHeight2.animateTo(
-                targetValue = screenHeight / 4,
+                targetValue = screenHeightPx / 4,
                 animationSpec = tween(durationMillis = 5000)
             )
         }
@@ -60,18 +61,23 @@ fun CustomContainerCompose(
 
     Box(
         modifier = Modifier
-            .offset(y = animatedHeight1.value.dp)
+            .graphicsLayer(
+                alpha = alpha.value,
+                translationY = animatedHeight1.value
+            )
             .height((screenHeight / 2).dp)
-            .alpha(alpha.value)
     ) {
         firstChild?.invoke()
     }
 
     Box(
         modifier = Modifier
-            .offset(y = animatedHeight2.value.dp)
+            .graphicsLayer(
+                alpha = alpha.value,
+                translationY = animatedHeight2.value
+            )
             .height((screenHeight / 2).dp)
-            .alpha(alpha.value)
+
     ) {
         secondChild?.invoke()
     }
